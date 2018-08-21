@@ -1,0 +1,96 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
+      <div class="layui-card">
+        <div class="layui-card-header">网站设置</div>
+        <div class="layui-card-body" pad15>
+          <div class="layui-form" wid100 lay-filter="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">网站名称</label>
+              <div class="layui-input-block">
+                <input type="text" name="configure[sitename]" value="{$configure.sitename}" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">网站域名</label>
+              <div class="layui-input-block">
+                <input type="text" name="configure[domain]" value="{$configure.domain}" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">最大文件上传</label>
+              <div class="layui-input-inline" style="width: 80px;">
+                <input type="text" name="configure[upload_size]" lay-verify="number" value="{$configure.upload_size}" class="layui-input">
+              </div>
+              <div class="layui-input-inline layui-input-company">KB</div>
+              <div class="layui-form-mid layui-word-aux">提示：1 M = 1024 KB</div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">上传文件类型</label>
+              <div class="layui-input-block">
+                <input type="text" name="configure[upload_ext]" value="{$configure.upload_ext}" class="layui-input">
+              </div>
+            </div>
+       
+            <div class="layui-form-item layui-form-text">
+              <label class="layui-form-label">版权信息</label>
+              <div class="layui-input-block">
+                <textarea name="configure[copyright]" class="layui-textarea">{$configure.copyright}</textarea>
+              </div>
+            </div>
+             <div class="layui-form-item layui-form-text">
+              <label class="layui-form-label">icp</label>
+              <div class="layui-input-block">
+                <textarea name="configure[icp]" class="layui-textarea">{$configure.icp}</textarea>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="set_website">确认保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  layui.use('form', function() {
+    var form = layui.form;
+   
+    form.on('submit(set_website)', function(data) {
+      $.ajax({
+        type: "POST",
+        url: "/configure/website",
+        dataType: 'json',
+        data: data.field,
+        success: function(res) {
+          if (res.code == 200) {
+            layer.msg('保存成功', {
+              offset: 'auto',
+              icon: 1,
+              time: 1000
+            }, function() {
+              location.reload();
+            });
+
+          } else {
+            layer.msg('保存失败');
+          }
+        },
+        error: function() {
+          layer.msg('网络异常，请重试！');
+        }
+      });
+      return false;
+    });
+
+
+  });
+
+});
+</script>
+{include file='../library/footer.lbi'}

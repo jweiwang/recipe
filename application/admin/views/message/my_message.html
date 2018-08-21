@@ -1,0 +1,107 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid" id="LAY-app-message">
+  <div class="layui-card">
+    <div class="layui-tab layui-tab-brief layui-card-body">
+      <ul class="layui-tab-title">
+        <li {if $public eq 'all'}class="layui-this" {/if}>
+          <a href="/message/my/public/all">全部消息{if $count.all}<span class="layui-badge">{$count.all}</span>{/if}</a>
+        </li>
+        <li {if $public eq 'system'}class="layui-this" {/if}>
+          <a href="/message/my/public/system">通知{if $count.system}<span class="layui-badge">{$count.system}</span>{/if}</a>
+        </li>
+        <li {if $public eq 'letter'}class="layui-this" {/if}>
+          <a href="/message/my/public/letter">私信{if $count.letter}<span class="layui-badge">{$count.letter}</span>{/if}</a>
+        </li>
+      </ul>
+      <div>
+        <div class="LAY-app-message-btns" style="margin-bottom: 10px;margin-top: 10px;">
+          <button class="layui-btn layui-btn-primary layui-btn-sm J_message" data-type="all" data-events="del">删除</button>
+          <button class="layui-btn layui-btn-primary layui-btn-sm J_message" data-type="all" data-events="read">标记已读</button>
+        
+        </div>
+        <table cellspacing="0" cellpadding="0" border="0" class="layui-table layui-form" lay-skin="line">
+          <thead>
+            <tr>
+              <th class="w25">
+                <input type="checkbox" lay-skin="primary" class="checkbox_all" lay-filter="checkbox_all">
+              </th>
+              <th class="wb50">
+                <div class="layui-table-cell laytable-cell-1-title"><span>标题内容</span></div>
+              </th>
+              <th data-field="time">
+                <div class="layui-table-cell laytable-cell-1-time"><span>时间</span></div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {if $result.rows} {foreach from=$result.rows item=item}
+            <tr data-id="{$item.id}">
+              <td class="w25">
+                <input type="checkbox" name="idboxs" lay-skin="primary" value="{$item.id}">
+              </td>
+              <td class="wb50">
+                <div class="layui-table-cell laytable-cell-1-title">
+                  <a href="/message/view/id/{$item.id}" {if $item.read_time eq 0}style="font-weight: bold;"{/if}>{$item.title}</a>
+                </div>
+              </td>
+              <td>
+                <div class="layui-table-cell laytable-cell-1-time">{$item.send_time|date_format:'%Y-%m-%d %H:%I:%S'}</div>
+              </td>
+            </tr>
+            {/foreach} {/if}
+          </tbody>
+        </table>
+        <div class="clearfix ">
+          <div class="fn-left">
+          </div>
+          <div class="fn-right clearfix " id="page" total="{$result.count}" curr="{$result.page}" limit="{$result.pagesize}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+$(document).ready(function() {
+  $(".J_message").click(function(){
+    var _ids  = $('input[name=idboxs]:checked').map(function(){
+            return $(this).val();
+        }).get().join(',');
+
+    if (!_ids){
+      layer.msg('请选择要操作的记录！');
+      return;
+    }
+    
+    var events = $(this).attr('data-events');
+    var _this = $(this);
+    layer.confirm('确定要操作吗？', { icon: 3, title: '提示' }, function(index) {
+      var _id = _this.parent().parent().parent().attr('data-id');
+      $.ajax({
+        type: "POST",
+        url: "/message/read",
+        dataType: 'json',
+        data: "ids="+_ids+"&events="+events,
+        success: function(res) {
+          if (res.code == 200) {
+            layer.msg('操作成功', {
+              offset: 'auto',
+              icon: 1,
+              time: 1000
+            }, function() {
+              location.reload();
+            });
+          } else {
+            layer.msg('操作失败!');
+          }
+        },
+        error: function() {
+          layer.msg('网络异常，操作失败!');
+        }
+      });
+    })
+  })
+})
+</script>
+{include file='../library/footer.lbi'}

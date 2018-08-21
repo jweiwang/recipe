@@ -1,0 +1,97 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<form name="searchfrm" action="/moduels_group/index" method="GET" id="searchfrm" class="layui-form layui-card-header layuiadmin-card-header-auto">
+			<div class="layui-input-inline">权限组：</div>
+			<div class="layui-input-inline">
+				<input type='text' name='name' value="{if $ver.name}{$ver.name}{/if}" class="layui-input">
+			</div>
+			<div class="layui-input-inline">
+				<button class="layui-btn layuiadmin-btn-list" id="search">
+					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+				</button>
+				<button class="layui-btn layuiadmin-btn-list" type="reset">
+					重置
+				</button>
+			</div>
+		</form>
+		<div class="layui-card-body">
+			<div style="padding-bottom: 10px;">
+				<button class="layui-btn layuiadmin-btn-list" onclick="iframe_box('/moduels_group/add','添加角色','800','600');">添加角色</button>
+			</div>
+			<table class="layui-table">
+				<thead>
+					<tr>
+						<th class="wb5">ID</th>
+						<th class="wb15">权限组名称</th>
+						<th>关联账户</th>
+						<th>描述</th>
+						<th class="wb10">操作</th>
+					</tr>
+				</thead>
+				{if $result.rows} {foreach from=$result.rows item=item}
+				<tr data-id="{$item.id}">
+					<td>{$item.id}</td>
+					<td>{$item.name}</td>
+					<td>{$item.members}</td>
+					<td>{$item.des}</td>
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" lay-event="edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a>
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+						</div>
+					</td>
+				</tr>
+				{/foreach} {/if}
+			</table>
+			<div class="clearfix">
+				<div class="fn-left clearfix">
+				</div>
+				<div class="fn-right clearfix" id="page" total="{$result.count}" curr="{$result.page}" limit="{$result.pagesize}">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$("#search").click(function() {
+		$("#searchfrm").submit();
+	});
+	$(".J_edit").click(function() {
+		var _id = $(this).parent().parent().parent().attr('data-id');
+		iframe_box('/moduels_group/add/id/' + _id, '编辑', '800', '600');
+	})
+	$(".J_del").click(function() {
+		var _this = $(this);
+		layer.confirm('删除后不可恢复，确定要删除吗？', { icon: 3, title: '删除提示' }, function(index) {
+			var _id = _this.parent().parent().parent().attr('data-id');
+			$.ajax({
+				type: "POST",
+				url: "/moduels_group/del",
+				dataType: 'json',
+				data: "id=" + _id,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('删除成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('删除失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	})
+})
+</script>
+{/literal} {include file='../library/footer.lbi'}

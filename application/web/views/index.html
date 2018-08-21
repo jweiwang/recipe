@@ -1,0 +1,50 @@
+{include file='library/header.lbi'}
+    {nocache}
+    <div class="container-wrap">
+        <div class="container">
+            <div class="contar-wrap">
+                {if $list.rows} {foreach from=$list.rows item=item}
+                <div class="item">
+                    <div class="item-box  layer-photos-demo1 layer-photos-demo">
+                        <h3><a href="/recipe/{$item.id}.html" target="_blank" title="{$item.title}">{$item.title}</a></h3>
+                        <h5>发布于：<span>{$item.update_time}</span></h5>
+                        <p><font class="color-blue">备料：</font>{$item.ings}</p>
+                        {if $item.img}
+                        <div class="layui-row">
+                            <div class="layui-col-md5 list-img">
+                                <img src="{$item.img}" alt="{$item.title}">
+                            </div>
+                            <div class="layui-col-md7">
+                                <div class="layui-row">
+                                    <div class="layui-col-md12 list-steps">
+                                        <font class="color-blue">步骤：</font><br>{$item.steps}
+                                    </div>
+                                    <div class="layui-col-md12 list-btn">
+                                        <a href="/recipe/{$item.id}.html" target="_blank" class="layui-btn layui-btn-sm layui-btn-normal" title="{$item.title}-开始去做菜"> <i class="layui-icon layui-icon-fire"></i>开始去做菜</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {else}
+                        <div class="layui-row">
+                            <div class="layui-col-md12 list-steps">
+                                <font class="color-blue">步骤：</font><br>{$item.steps}
+                            </div>
+                            <div class="layui-col-md12 list-btn">
+                                <a href="/recipe/{$item.id}.html" target="_blank" class="layui-btn layui-btn-sm layui-btn-normal" title="{$item.title}-开始去做菜"> <i class="layui-icon layui-icon-fire"></i>开始去做菜</a>
+                            </div>
+                        </div>
+                        {/if}
+                    </div>
+                </div>
+                {/foreach} {/if}
+                {if $list.next_page}
+                <div class="item-btn">
+                    <a class="layui-btn layui-btn-normal" href="/?page={$list.next_page}">下一页</a>
+                </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+    {/nocache}
+{include file='library/footer.lbi'}

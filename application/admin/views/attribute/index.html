@@ -1,0 +1,72 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-list" onclick="iframe_box('/attribute/add/parent_id/{$parent_id}','添加','600','400');">添加</button>
+            </div>
+            {if $parent_id}
+            <div class="clearfix fn-p-10">
+                <span class="layui-breadcrumb">
+                    <a href="/attribute/index/parent_id/0">列表</a>
+                    {foreach from=$parents item=item name=foo}
+                    {if $smarty.foreach.foo.last}
+                     <a><cite>{$item.attr_name}</cite></a>
+                    {else}
+                     <a href="/attribute/index/parent_id/{$item.id}">{$item.attr_name}</a>
+                    {/if}
+                    {/foreach}
+                </span>
+            </div>
+            {/if}
+            <table class="layui-table"  lay-skin="nob">
+                {foreach from=$result key=id item=item name=foo}
+                <tr data-id="{$item.id}" style="border-bottom: 1px solid #e6e6e6;">
+                    <td class="level1 li-left">{$item.attr_name}</td>
+                    <td style="text-align: right;">
+                        <div class="layui-table-cell laytable-cell-2-8">
+                            <a class="layui-btn layui-btn-normal layui-btn-xs J_edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a>
+                            <a class="layui-btn layui-btn-danger layui-btn-xs J_del" ><i class="layui-icon layui-icon-delete"></i>删除</a>
+                             <a class="layui-btn layui-btn-danger layui-btn-xs " href="/attribute/index/parent_id/{$item.id}"><i class="layui-icon layui-icon-set-fill"></i>属性</a>
+                        </div>
+                    </td>
+                </tr>
+                {/foreach}
+            </table>
+        </div>
+    </div>
+</div>
+{literal}
+<script>
+$(function() {
+    $(".J_del").click(function() {
+        var _this = $(this);
+        layer.confirm('删除后不可恢复，确定要删除吗？', { icon: 3, title: '删除提示' }, function(index) {
+            var _id = _this.parent().parent().parent().attr('data-id');
+            $.ajax({
+                type: "POST",
+                url: "/attribute/del",
+                dataType: 'json',
+                data: "id=" + _id,
+                success: function(res) {
+                    if (res.code == 200) {
+                        layer.msg('删除成功', {
+                            offset: 'auto',
+                            icon: 1,
+                            time: 1000
+                        }, function() {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg('删除失败!');
+                    }
+                },
+                error: function() {
+                    layer.msg('网络异常，操作失败!');
+                }
+            });
+        })
+    })
+})
+</script>
+{/literal} {include file='../library/footer.lbi'}

@@ -1,0 +1,16 @@
+    <div class="footer">
+        <p>
+            <span>{$configure.copyright}</span>
+            <span>{$configure.icp}</span>
+        </p>
+       
+    </div>
+<script src="/www/web/res/layui/layui.js"></script>
+<script>
+layui.config({
+    base: '/www/web/res/static/js/'
+}).use('blog');
+</script>
+</body>
+
+</html>

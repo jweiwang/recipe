@@ -1,0 +1,109 @@
+{include file='../library/header.lbi'}
+<link href="/www/admin/umeditor/themes/default/css/umeditor.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="/www/admin/umeditor/third-party/jquery.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/www/admin/umeditor/umeditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="/www/admin/umeditor/umeditor.min.js"></script>
+<script type="text/javascript" src="/www/admin/umeditor/lang/zh-cn/zh-cn.js"></script>
+{literal}
+<style type="text/css">
+.edui-container{width:100% !important;}
+</style>
+{/literal}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body" style="padding: 15px;">
+			<form class="layui-form fn-mt-20" action="">
+				<div class="layui-form-item">
+					<label class="layui-form-label"><span class="color-red">*</span>标题</label>
+					<div class="layui-input-block">
+						<input type="text" name="title" value="{$info.title}" class="layui-input" autocomplete="off" lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">消息类型</label>
+					<div class="layui-input-block">
+						<input type="radio" name="is_public" lay-filter="is_public" value="1" title="通知" {if $info.is_public eq 1}checked{/if}>
+						<input type="radio" name="is_public" lay-filter="is_public" value="0" title="私信" {if $info.is_public neq 1}checked{/if}>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">接收人</label>
+					<div class="layui-input-block">
+						<select name="receive_id" lay-search id="receive_id" {if $info.is_public eq	1}disabled{/if}>
+							<option value="">选择帐号</option>
+							{foreach from=$members item=item}
+							<option value="{$item.id}" {if $info.receive_id eq $item.id}selected{/if}>{$item.account}</option>
+							{/foreach}
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">发送内容</label>
+					<div class="layui-input-block">
+						<textarea name="content" class="layui-textarea" id="myEditor" style="height:180px;">{$info.content}</textarea>
+					</div>
+				</div>
+				<div class="layui-form-item layui-layout-admin">
+					<div class="layui-input-block">
+						<div class="layui-footer" style="left: 0;">
+							<input type="hidden" name="id" value="{$info.id}">
+							<button class="layui-btn" lay-submit lay-filter="formsubmit">立即提交</button>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{literal}
+<script>
+$(document).ready(function() {
+	var um = UM.getEditor('myEditor', { zIndex: 1 });
+	layui.use('form', function() {
+		var form = layui.form;
+
+		form.on('radio(is_public)', function(data){
+		  	if (data.value == 1) {
+		  		$('#receive_id').attr("disabled",true); 
+		  	} else {
+		  		$('#receive_id').removeAttr("disabled"); 
+		  	}
+		  	form.render('select');
+		});  
+		form.on('submit(formsubmit)', function(data) {
+			data.elem.disabled = true;
+			data.elem.innerHTML = '正在提交..';
+			$.ajax({
+				type: "POST",
+				url: "/message/add",
+				dataType: 'json',
+				data: data.field,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('保存成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							parent.location.reload();
+							var index = parent.layer.getFrameIndex(window.name);
+							parent.layer.close(index)
+						});
+
+					} else {
+						layer.msg('保存失败');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，请重试！');
+				}
+			});
+			return false;
+		});
+
+
+	});
+
+});
+</script>
+{/literal} {include file='../library/footer.lbi'}

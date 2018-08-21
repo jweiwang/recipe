@@ -1,0 +1,174 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<form name="searchfrm" action="/message/index" method="GET" id="searchfrm" class="layui-form layui-card-header layuiadmin-card-header-auto">
+			
+			<div class="layui-input-inline w150">
+				<select name="is_public">
+					<option value="">消息类型</option>
+					<option value="1" {if $ver.is_public eq 1}selected{/if}>系统</option>
+					<option value="-1" {if $ver.is_public eq -1}selected{/if}>私信</option>
+				</select>
+			</div>
+			<div class="layui-input-inline w150">
+				<select name="poster_id" lay-search>
+					<option value="">选择发送人</option>
+					{foreach from=$members item=item}
+					{if $item.status eq 1 && $item.is_del eq 0}
+					<option value="{$item.id}" {if $ver.poster_id eq $item.id}selected{/if}>{$item.account}</option>
+					{/if}
+					{/foreach}
+				</select>
+			</div>
+			<div class="layui-input-inline w150">
+				<select name="receive_id" lay-search>
+					<option value="">选择接收人</option>
+					
+					{foreach from=$members item=item}
+					{if $item.status eq 1 && $item.is_del eq 0}
+					<option value="{$item.id}" {if $ver.receive_id eq $item.id}selected{/if}>{$item.account}</option>
+					{/if}
+					{/foreach}
+
+				</select>
+			</div>
+			<div class="layui-input-inline">发送时间：</div>
+			<div class="layui-input-inline">
+				<input type='text' name='date_start' value="{$ver.date_start}" class="layui-input layui-date">
+			</div>
+			<div class="layui-input-inline">
+				-
+			</div>
+			<div class="layui-input-inline">
+				<input type='text' name='date_end' value="{$ver.date_end}" class="layui-input layui-date">
+			</div>
+			<div class="layui-input-inline">
+				<button class="layui-btn layuiadmin-btn-list" id="search">
+					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+				</button>
+				<button class="layui-btn layuiadmin-btn-list" type="reset">
+					重置
+				</button>
+			</div>
+		</form>
+		<div class="layui-card-body">
+			<div style="padding-bottom: 10px;">
+				<button class="layui-btn layuiadmin-btn-list" onclick="iframe_box('/message/add','添加消息','800','600');">添加消息</button>
+			</div>
+			<table class="layui-table">
+				<thead>
+					<tr>
+						<th class="w25">ID</th>
+						<th>标题</th>
+						<th>消息类型</th>
+						<th>发送人</th>
+						<th>接收人</th>
+						<th>是否已发送</th>
+						<th>发送时间</th>
+						<th class="wb10">操作</th>
+					</tr>
+				</thead>
+				{if $result.rows} {foreach from=$result.rows item=item}
+				<tr data-id="{$item.id}">
+					<td>{$item.id}</td>
+					<td><a href="">{$item.title}</a></td>
+					<td>{$item.type}</td>
+					<td>{$item.poster}</td>
+					<td>{$item.receiver}</td>
+					<td>
+						{if $item.is_send}<span class="color-green">已发送</span>{else}未发送{/if}
+					</td>
+					<td>{if $item.send_time}{$item.send_time|date_format:'%Y-%m-%d %H:%I:%S'}{/if}</td>
+					
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							{if !$item.is_send}
+							<a class="layui-btn layui-btn-warm layui-btn-xs J_send" ><i class="layui-icon layui-icon-release"></i>发送</a>
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" ><i class="layui-icon layui-icon-edit" ></i>编辑</a>
+							{/if}
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" ><i class="layui-icon layui-icon-delete"></i>删除</a>
+						</div>
+					</td>
+				</tr>
+				{/foreach} {/if}
+			</table>
+			<div class="clearfix">
+				<div class="fn-left">
+				</div>
+				<div class="fn-right clearfix" id="page" total="{$result.count}" curr="{$result.page}" limit="{$result.pagesize}">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".J_send").click(function() {
+		var _this = $(this);
+		layer.confirm('确定要发送吗？', { icon: 3, title: '删除提示' }, function(index) {
+			var _id = _this.parent().parent().parent().attr('data-id');
+			$.ajax({
+				type: "POST",
+				url: "/message/send",
+				dataType: 'json',
+				data: "id=" + _id,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('发送成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('发送失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	})
+
+	$(".J_edit").click(function() {
+		var _id = $(this).parent().parent().parent().attr('data-id');
+		iframe_box('/message/add/id/' + _id, '编辑', '800', '600');
+	})
+
+	$("#search").click(function() {
+		$("#searchfrm").submit();
+	});
+	$(".J_del").click(function() {
+		var _this = $(this);
+		layer.confirm('确定要删除吗？', { icon: 3, title: '删除提示' }, function(index) {
+			var _id = _this.parent().parent().parent().attr('data-id');
+			$.ajax({
+				type: "POST",
+				url: "/message/del",
+				dataType: 'json',
+				data: "id=" + _id,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('删除成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('删除失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	})
+})
+</script>
+{/literal} {include file='../library/footer.lbi'}

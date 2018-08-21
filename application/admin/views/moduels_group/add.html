@@ -1,0 +1,103 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body" style="padding: 15px;">
+			<div class="layui-form" lay-filter="layuiadmin-form-role" id="layuiadmin-form-role" style="padding: 20px 30px 0 0;">
+				<div class="layui-form-item">
+					<label class="layui-form-label"><span class="color-red">*</span>角色</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" value="{$info.name}" autocomplete="off" class="layui-input" lay-verify="required">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">权限范围</label>
+					<div class="layui-input-block">
+						{foreach from=$moduels item=item1}
+						<fieldset class="layui-elem-field site-demo-button">
+							<legend>
+								<input type="checkbox" name="moduels[]" lay-skin="primary" title="{$item1.name}" value="{$item1.id}" lay-filter="J_select" {$item1.checked}>
+							</legend>
+							<div class="fn-p-10">
+								{if $item1.child} 
+								{foreach from=$item1.child item=item2}
+								{if $item2.child}
+								<fieldset class="layui-elem-field site-demo-button">
+									<legend>
+										<input type="checkbox" name="moduels[]" lay-skin="primary" title="{$item2.name}" value="{$item2.id}" lay-filter="J_select" {$item2.checked}>
+									</legend>
+									<div class="fn-p-10">
+										{if $item2.child} {foreach from=$item2.child item=item3}
+										<input type="checkbox" name="moduels[]" lay-skin="primary" title="{$item3.name}" value="{$item3.id}" {$item3.checked}> {/foreach} {/if}
+									</div>
+								</fieldset>
+								{else}
+								<input type="checkbox" name="moduels[]" lay-skin="primary" title="{$item2.name}" value="{$item2.id}" {$item2.checked}>
+								{/if}
+								{/foreach} 
+								{/if}
+							</div>
+						</fieldset>
+						{/foreach}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">具体描述</label>
+					<div class="layui-input-block">
+						<textarea type="text" name="des"  class="layui-textarea">{$info.des}</textarea>
+					</div>
+				</div>
+				<div class="layui-form-item layui-layout-admin">
+		            <div class="layui-input-block">
+		                <div class="layui-footer" style="left: 0;">
+		                    <input type="hidden" name="id" value="{$info.id}">
+		                    <button class="layui-btn" lay-submit lay-filter="formsubmit">立即提交</button>
+		                </div>
+		            </div>
+		        </div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$(document).ready(function() {
+	layui.use('form', function() {
+		var form = layui.form;
+		form.on('submit(formsubmit)', function(data) {
+			data.elem.disabled = true;
+			data.elem.innerHTML = '正在提交..';
+			$.ajax({
+				type: "POST",
+				url: "/moduels_group/add",
+				dataType: 'json',
+				data: data.field,
+				success: function(res) {
+					if (res.code == 200) {
+						 layer.msg('保存成功', {
+                            offset: 'auto',
+                            icon: 1,
+                            time: 1000
+                        }, function() {
+                            parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index)
+                        });
+					} else {
+						layer.msg('保存失败');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，请重试！');
+				}
+			});
+			return false;
+		});
+
+		form.on('checkbox(J_select)', function(data){
+		  	$(data.elem).parent().next().find('input').prop('checked', $(this).prop('checked'));
+		  	form.render('checkbox');;
+		});   
+	});
+
+});
+</script>
+{include file='../library/footer.lbi'}

@@ -1,0 +1,107 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<div class="layui-card-body">
+			<div style="padding-bottom: 10px;">
+				<button class="layui-btn layuiadmin-btn-role" onclick="iframe_box('/moduels/add','添加','800','650');">添加</button>
+			</div>
+			<table class="layui-table" lay-skin="line" lay-filter="test">
+				<thead>
+					<tr>
+						<th>一级</th>
+						<th>二级</th>
+						<th>三级</th>
+						<th>排序</th>
+						<th>是否菜单</th>
+						<th>图标</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				{if $result|default:FALSE} {foreach from=$result key=id item=item name=foo}
+				<tr data-id="{$item.id}">
+					<td>{$item.name}</td>
+					<td></td>
+					<td></td>
+					<td>{$item.sort}</td>
+					<td>{if $item.is_menu eq 1}<span class="color-green">是</span>{else}<span class="color-red">否</span>{/if}</td>
+					<td><i class="layui-icon {$item.icon}"></i></td>
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" lay-event="edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a> {if !$item.child|default:FALSE}
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a> {/if}
+						</div>
+					</td>
+				</tr>
+				{if $item.child|default:FALSE} {foreach from=$item.child item=item1}
+				<tr data-id="{$item1.id}">
+					<td></td>
+					<td>{$item1.name}</td>
+					<td></td>
+					<td>{$item1.sort}</td>
+					<td>{if $item1.is_menu eq 1}<span class="color-green">是</span>{else}<span class="color-red">否</span>{/if}</td>
+					<td><i class="layui-icon {$item1.icon}"></i></td>
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" lay-event="edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a> {if !$item1.child|default:FALSE}
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a> {/if}
+						</div>
+					</td>
+				</tr>
+				{if $item1.child|default:FALSE} {foreach from=$item1.child item=item2}
+				<tr data-id="{$item2.id}">
+					<td></td>
+					<td></td>
+					<td>{$item2.name}</td>
+					<td>{$item2.sort}</td>
+					<td>{if $item2.is_menu eq 1}<span class="color-green">是</span>{else}<span class="color-red">否</span>{/if}</td>
+					<td><i class="layui-icon {$item2.icon}"></i></td>
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" lay-event="edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a>
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+						</div>
+					</td>
+				</tr>
+				{/foreach} {/if} {/foreach} {/if} {/foreach} {/if}
+			</table>
+		</div>
+	</div>
+</div>
+{literal}
+<script>
+$(function() {
+	$(".J_edit").click(function() {
+		var _id = $(this).parent().parent().parent().attr('data-id');
+		iframe_box('/moduels/add/id/' + _id, '编辑', '800', '650');
+	})
+	$(".J_del").click(function() {
+		var _this = $(this);
+		layer.confirm('删除后不可恢复，确定要删除吗？', { icon: 3, title: '删除提示' }, function(index) {
+			var _id = _this.parent().parent().parent().attr('data-id');
+			$.ajax({
+				type: "POST",
+				url: "/moduels/del",
+				dataType: 'json',
+				data: "id=" + _id,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('删除成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('删除失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	})
+})
+</script>
+{/literal} {include file='../library/footer.lbi'}

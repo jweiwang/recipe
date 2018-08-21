@@ -1,0 +1,22 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid" id="LAY-app-message-detail">
+  <div class="layui-card layuiAdmin-msg-detail">
+      <div class="layui-card-header">
+        <h1>{$info.title}</h1>
+        <p>
+          <span>{$info.send_time|date_format:'%Y-%m-%d %H:%I:%S'}</span>
+        </p>
+      </div>
+      <div class="layui-card-body layui-text">
+        <div class="layadmin-text">
+          {$info.content}
+          
+        </div>
+        <div style="padding-top: 30px;">
+          <a href="javascript:;" layadmin-event="back" class="layui-btn layui-btn-primary layui-btn-sm">返回</a>
+        </div>
+      </div>
+
+  </div>
+</div>
+{include file='../library/footer.lbi'}

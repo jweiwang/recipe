@@ -1,0 +1,103 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
+      <div class="layui-card">
+        <div class="layui-card-header">设置我的资料</div>
+        <div class="layui-card-body" pad15>
+          <div class="layui-form" lay-filter="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">用户名</label>
+              <div class="layui-input-inline">
+                <input type="text" name="username" value="{$loginUser.account}" readonly class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">姓名</label>
+              <div class="layui-input-inline">
+                <input type="text" name="username" value="{$loginUser.name}" readonly class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">管理员录入，不可更改</div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">性别</label>
+              <div class="layui-input-block">
+                <input type="radio" name="sex" value="1" title="男" {if $loginUser.sex eq 1}checked{/if}>
+                <input type="radio" name="sex" value="2" title="女" {if $loginUser.sex eq 2}checked{/if}>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">手机</label>
+              <div class="layui-input-inline">
+                <input type="text" name="mobile" value="{$loginUser.mobile}"  autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">邮箱</label>
+              <div class="layui-input-inline">
+                <input type="text" name="email" value="{$loginUser.email}"  autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">入职时间</label>
+              <div class="layui-input-inline">
+                <input type="text" name="entry_time" value="{if $loginUser.entry_time}{$loginUser.entry_time|date_format:'%Y-%m-%d'}{/if}"  readonly autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">管理员录入，不可更改</div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+              <label class="layui-form-label">工作职责</label>
+              <div class="layui-input-block">
+                <textarea name="workdo" placeholder="请输入内容" class="layui-textarea">{$loginUser.workdo}</textarea>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="setmyinfo">确认修改</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  layui.use('form', function() {
+    var form = layui.form;
+   
+    form.on('submit(setmyinfo)', function(data) {
+      $.ajax({
+        type: "POST",
+        url: "/members/my",
+        dataType: 'json',
+        data: data.field,
+        success: function(res) {
+          if (res.code == 200) {
+            layer.msg('修改成功', {
+              offset: 'auto',
+              icon: 1,
+              time: 1000
+            }, function() {
+              location.reload();
+            });
+
+          } else {
+            layer.msg('修改失败');
+          }
+        },
+        error: function() {
+          layer.msg('网络异常，请重试！');
+        }
+      });
+      return false;
+    });
+
+
+  });
+
+});
+</script>
+{include file='../library/footer.lbi'}

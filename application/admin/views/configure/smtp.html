@@ -1,0 +1,89 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md12">
+      <div class="layui-card">
+        <div class="layui-card-header">邮件服务</div>
+        <div class="layui-card-body">
+          <div class="layui-form" wid100 lay-filter="">
+            <div class="layui-form-item">
+              <label class="layui-form-label">SMTP服务器</label>
+              <div class="layui-input-inline">
+                <input type="text" name="configure[smtp_server]" value="{$configure.smtp_server}" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">如：smtp.163.com</div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">SMTP端口号</label>
+              <div class="layui-input-inline" style="width: 80px;">
+                <input type="text" name="configure[port]" lay-verify="number" value="{$configure.port}" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">一般为 25 或 465</div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人邮箱</label>
+              <div class="layui-input-inline">
+                <input type="text" name="configure[send_email]" value="{$configure.send_email}" lay-verify="email" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">发件人昵称</label>
+              <div class="layui-input-inline">
+                <input type="text" name="configure[send_nickname]" value="{$configure.send_nickname}" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <label class="layui-form-label">邮箱登入密码</label>
+              <div class="layui-input-inline">
+                <input type="password" name="configure[send_password]" value="{$configure.send_password}" autocomplete="off" class="layui-input">
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="set_system_email">确认保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function() {
+  layui.use('form', function() {
+    var form = layui.form;
+   
+    form.on('submit(set_system_email)', function(data) {
+      $.ajax({
+        type: "POST",
+        url: "/configure/smtp",
+        dataType: 'json',
+        data: data.field,
+        success: function(res) {
+          if (res.code == 200) {
+            layer.msg('保存成功', {
+              offset: 'auto',
+              icon: 1,
+              time: 1000
+            }, function() {
+              location.reload();
+            });
+
+          } else {
+            layer.msg('保存失败');
+          }
+        },
+        error: function() {
+          layer.msg('网络异常，请重试！');
+        }
+      });
+      return false;
+    });
+
+
+  });
+
+});
+</script>
+{include file='../library/header.lbi'}

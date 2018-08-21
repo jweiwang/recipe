@@ -1,0 +1,124 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid" >
+    <div class="layui-card">
+    
+    <div class="layui-card-body" style="padding: 15px;">
+
+	<form id="form" class="layui-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label"><span class="color-red">*</span>权限名称：</label>
+            <div class="layui-input-block">
+                 <input type="text" name="name" class="layui-input" value="{$info.name}" lay-verify="required"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">上级：</label>
+            <div class="layui-input-block">
+                <select class="layui-select" name="parent_id" >
+                    <option value="">选择上级栏目</option>
+                    {foreach from=$parent  item=row}
+                    <option value="{$row.id}" {if $info.parent_id eq $row.id}selected{/if}>{$row.name}</option>
+                    {if $row.child}
+                    {foreach from=$row.child  item=v}
+                    <option value="{$v.id}" {if $info.parent_id eq $v.id}selected{/if} >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{$v.name}</option>
+                    {/foreach}
+                    {/if}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">目录：</label>
+            <div class="layui-input-block">
+                <input type="text" name="directory" class="layui-input" value="{$info.directory}" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类：</label>
+            <div class="layui-input-block">
+                <input type="text" name="class" class="layui-input" value="{$info.class}" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">方法：</label>
+            <div class="layui-input-block">
+                <input type="text" name="method" class="layui-input" value="{$info.method}" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"> 默认方法：</label>
+            <div class="layui-input-block">
+                <input type="text" name="index" class="layui-input" value="{$info.index}" />
+            </div>
+        </div>
+         <div class="layui-form-item">
+            <label class="layui-form-label"> 排序：</label>
+            <div class="layui-input-block">
+                <input type="text" name="sort" class="layui-input" value="{$info.sort}" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"> 图标：</label>
+            <div class="layui-input-block">
+                <input type="text" name="icon" class="layui-input" value="{$info.icon}" />
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label"> <span class="color-red">*</span>是否菜单：</label>
+            <div class="layui-input-block">
+                <input name="is_menu" type="radio" value="1" checked title="是">
+                <input name="is_menu" type="radio" value="2" {if $info.status|default:FALSE}{if $info.status eq 2}checked{/if}{/if} title="否">
+            </div>
+        </div>
+        <div class="layui-form-item layui-layout-admin">
+            <div class="layui-input-block">
+                <div class="layui-footer" style="left: 0;">
+                    <input type="hidden" name="id" value="{$info.id}">
+                    <button class="layui-btn" lay-submit lay-filter="formsubmit">立即提交</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    </div>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+    layui.use('form', function() {
+        var form = layui.form;
+        form.on('submit(formsubmit)', function(data) {
+            data.elem.disabled = true;
+            data.elem.innerHTML = '正在提交..';
+            $.ajax({
+                type: "POST",
+                url: "/moduels/add",
+                dataType: 'json',
+                data: data.field,
+                success: function(res) {
+                    if (res.code == 200) {
+                        layer.msg('保存成功', {
+                            offset: 'auto',
+                            icon: 1,
+                            time: 1000
+                        }, function() {
+                            parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index)
+                        });
+                    	
+                    } else {
+                        layer.msg('保存失败');
+                    }
+                },
+                error: function() {
+                    layer.msg('网络异常，请重试！');
+                }
+            });
+            return false;
+        });
+    });
+    
+    
+});
+</script>
+{include file='../library/footer.lbi'}

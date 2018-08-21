@@ -1,0 +1,25 @@
+{include file='library/header.lbi'}
+<div class="container-wrap">
+    <div class="container container-message container-details">
+        <div class="contar-wrap">
+            <div class="item">
+                <div class="item-box  layer-photos-demo1 layer-photos-demo">
+                    <h3>{$info.title}</h3>
+                    <h5>发布于：<span>刚刚</span></h5>
+                    <p><font class="color-blue">备料：</font>{$info.ings}</p>
+                    {if $info.img}
+                    <img src="/{$info.img}" alt="{$info.title}" style="max-width:680px;">
+                    {/if}
+                    <p><font class="color-blue">步骤：</font><br>{$info.steps}</p>
+                    {nocache}
+                    <div class="count layui-clear">
+                        <span class="pull-left">阅读 <em>{$info.view_num}</em></span>
+                        <span class="pull-right like" data-id="{$info.id}"><i class="layui-icon layui-icon-praise"></i><em>{$info.like_num}</em></span>
+                    </div>
+                    {/nocache}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file='library/footer.lbi'}

@@ -1,0 +1,72 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding: 15px;">
+            <form class="layui-form fn-mt-20" action="">
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><span class="color-red">*</span>属性/名称：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="attr_name" value="{$info.attr_name}" class="layui-input" autocomplete="off" lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序：</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sort" class="layui-input" value="{$info.sort}" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;">
+                            <input type="hidden" name="id" value="{$info.id}">
+                            <input type="hidden" name="parent_id" value="{$parent_id}">
+                            <button class="layui-btn" lay-submit lay-filter="formsubmit">立即提交</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+$(document).ready(function() {
+    layui.use('form', function() {
+        var form = layui.form;
+        form.on('submit(formsubmit)', function(data) {
+            data.elem.disabled = true;
+            data.elem.innerHTML = '正在提交..';
+
+            $.ajax({
+                type: "POST",
+                url: "/attribute/add",
+                dataType: 'json',
+                data: data.field,
+                success: function(res) {
+                    if (res.code == 200) {
+                        layer.msg('保存成功', {
+                            offset: 'auto',
+                            icon: 1,
+                            time: 1000
+                        }, function() {
+                            parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index)
+                        });
+
+                    } else {
+                        layer.msg('保存失败');
+                    }
+                },
+                error: function() {
+                    layer.msg('网络异常，请重试！');
+                }
+            });
+            return false;
+        });
+    });
+
+
+});
+</script>
+{include file='../library/footer.lbi'}

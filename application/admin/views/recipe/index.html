@@ -1,0 +1,195 @@
+{include file='../library/header.lbi'}
+<div class="layui-fluid">
+	<div class="layui-card">
+		<form name="searchfrm" action="/recipe/index" method="GET" id="searchfrm" class="layui-form layui-card-header layuiadmin-card-header-auto">
+			<!--
+			<div class="layui-input-inline w120">
+				<select name="category">
+					<option value="">选择类型</option>
+					<option value="title" {if $ver.category eq 'title'}selected{/if}>标题关键字</option>
+					<option value="ings" {if $ver.category eq 'ings'}selected{/if}>食材关键字</option>
+				</select>
+			</div>
+			<div class="layui-input-inline">：
+			</div>
+			<div class="layui-input-inline">
+				<input type='text' name='category_val' value="{if $ver.category_val}{$ver.category_val}{/if}" class="layui-input" placeholder="关键字">
+			</div>
+		-->
+			<div class="layui-input-inline w150">
+				<select name="status">
+					<option value="">选择发布状态</option>
+					<option value="1" {if $ver.status eq 1}selected{/if}>发布中</option>
+					<option value="-1" {if $ver.status eq -1}selected{/if}>待发布</option>
+				</select>
+			</div>
+			<div class="layui-input-inline">发布时间：</div>
+			<div class="layui-input-inline">
+				<input type='text' name='date_start' value="{$ver.date_start}" class="layui-input layui-date">
+			</div>
+			<div class="layui-input-inline">
+				-
+			</div>
+			<div class="layui-input-inline">
+				<input type='text' name='date_end' value="{$ver.date_end}" class="layui-input layui-date">
+			</div>
+			<div class="layui-input-inline">
+				<button class="layui-btn layuiadmin-btn-list" id="search">
+					<i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+				</button>
+				<button class="layui-btn layuiadmin-btn-list" type="reset">
+					重置
+				</button>
+			</div>
+		</form>
+		<div class="layui-card-body">
+			<div style="padding-bottom: 10px;">
+				
+				<button class="layui-btn layuiadmin-btn-list" id="J_send"><i class="layui-icon layui-icon-release"></i>发布</button>
+				<button class="layui-btn layuiadmin-btn-list" id="J_del"><i class="layui-icon layui-icon-delete"></i>删除</button>
+				<button class="layui-btn layuiadmin-btn-list" onclick="iframe_box('/recipe/add','添加','1000','700');"><i class="layui-icon layui-icon-add-circle"></i>添加</button>
+			</div>
+			<table class="layui-table layui-form">
+				<thead>
+					<tr>
+						<th class="w25"><input type="checkbox" lay-skin="primary" class="checkbox_all" lay-filter="checkbox_all"></th>
+						<th>标题</th>
+						<th>来源</th>
+						<th>食材</th>
+						<th>状态</th>
+						<th>发布时间</th>
+						<th>点赞量</th>
+						<th class="wb10">操作</th>
+					</tr>
+				</thead>
+				{if $result.rows} {foreach from=$result.rows item=item}
+				<tr data-id="{$item.id}">
+					<td><input type="checkbox" name="idboxs" lay-skin="primary" value="{$item.id}"></td>
+					<td>{$item.title} <a href="{$item.baidu_url}" target="_blank" style="color:red;">搜图</a></td>
+					<td>{if $item.sname}<a href="{$item.surl}" target="_blank">{$item.sname}</a>{/if}</td>
+					<td>{$item.ings}</td>
+					<td>
+					<div class="layui-table-cell laytable-cell-1-status">
+					{if $item.status eq 1}
+					 <button class="layui-btn layui-btn-xs">已发布</button>
+					{else}
+					<button class="layui-btn layui-btn-primary layui-btn-xs">待发布</button>
+					{/if}
+					</div>
+					</td>
+					<td>{if $item.update_time}{$item.update_time|date_format:'%Y-%m-%d %H:%I:%S'}{/if}</td>
+					<td>{$item.like_num}</td>
+					<td>
+						<div class="layui-table-cell laytable-cell-2-8">
+							<a class="layui-btn layui-btn-warm layui-btn-xs J_send" ><i class="layui-icon layui-icon-release"></i>发布</a>
+							<a class="layui-btn layui-btn-normal layui-btn-xs J_edit" lay-event="edit"><i class="layui-icon layui-icon-edit" ></i>编辑</a>
+							<a class="layui-btn layui-btn-danger layui-btn-xs J_del" lay-event="del"><i class="layui-icon layui-icon-delete"></i>删除</a>
+						</div>
+					</td>
+				</tr>
+				{/foreach} {/if}
+			</table>
+			<div class="clearfix">
+				<div class="fn-left">
+				</div>
+				<div class="fn-right clearfix" id="page" total="{$result.count}" curr="{$result.page}" limit="{$result.pagesize}">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{literal}
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".J_edit").click(function() {
+		var _id = $(this).parent().parent().parent().attr('data-id');
+		iframe_box('/recipe/add/id/'+_id,'编辑','1000','700');
+	})
+
+	$("#search").click(function() {
+		$("#searchfrm").submit();
+	});
+	$("#J_del,.J_del").click(function() {
+		var _this = $(this);
+		if (_this.attr('id') == 'J_del') {
+			var _ids  = $('input[name=idboxs]:checked').map(function(){
+           	 	return $(this).val();
+        	}).get().join(',');
+		} else {
+			var _ids = _this.parent().parent().parent().attr('data-id');
+		}
+		
+	    if (!_ids){
+	      layer.msg('请选择要操作的记录！');
+	      return;
+	    }
+		layer.confirm('确定要删除吗？', { icon: 3, title: '删除提示' }, function(index) {
+			
+			$.ajax({
+				type: "POST",
+				url: "/recipe/del",
+				dataType: 'json',
+				data: "ids=" + _ids,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('删除成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('删除失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	});
+
+	$("#J_send,.J_send").click(function() {
+		var _this = $(this);
+		if (_this.attr('id') == 'J_send') {
+			var _ids  = $('input[name=idboxs]:checked').map(function(){
+           	 	return $(this).val();
+        	}).get().join(',');
+		} else {
+			var _ids = _this.parent().parent().parent().attr('data-id');
+		}
+		
+	    if (!_ids){
+	      layer.msg('请选择要操作的记录！');
+	      return;
+	    }
+		layer.confirm('确定要发布吗？', { icon: 3, title: '发布提示' }, function(index) {
+			
+			$.ajax({
+				type: "POST",
+				url: "/recipe/send",
+				dataType: 'json',
+				data: "ids=" + _ids,
+				success: function(res) {
+					if (res.code == 200) {
+						layer.msg('发布成功', {
+							offset: 'auto',
+							icon: 1,
+							time: 1000
+						}, function() {
+							location.reload();
+						});
+					} else {
+						layer.msg('发布失败!');
+					}
+				},
+				error: function() {
+					layer.msg('网络异常，操作失败!');
+				}
+			});
+		})
+	});
+})
+</script>
+{/literal} {include file='../library/footer.lbi'}
