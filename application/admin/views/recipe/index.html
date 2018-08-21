@@ -65,7 +65,7 @@
 				{if $result.rows} {foreach from=$result.rows item=item}
 				<tr data-id="{$item.id}">
 					<td><input type="checkbox" name="idboxs" lay-skin="primary" value="{$item.id}"></td>
-					<td>{$item.title} <a href="{$item.baidu_url}" target="_blank" style="color:red;">搜图</a></td>
+					<td>{if $item.img}<a href="javascript:;" class="showimg" data-url="{$item.img}" style="color:red;">[图] </a>{/if}{$item.title} <a href="{$item.baidu_url}" target="_blank" style="color:red;">搜图</a></td>
 					<td>{if $item.sname}<a href="{$item.surl}" target="_blank">{$item.sname}</a>{/if}</td>
 					<td>{$item.ings}</td>
 					<td>
@@ -106,6 +106,10 @@ $(document).ready(function() {
 		iframe_box('/recipe/add/id/'+_id,'编辑','1000','700');
 	})
 
+	$(".showimg").click(function(){
+		var imgurl = $(this).attr('data-url');
+		layer.open({type: 1, area: ['800px', '493px'],content: '<img src="/'+imgurl+'" style="width:800px;height:450px">'});
+	})
 	$("#search").click(function() {
 		$("#searchfrm").submit();
 	});

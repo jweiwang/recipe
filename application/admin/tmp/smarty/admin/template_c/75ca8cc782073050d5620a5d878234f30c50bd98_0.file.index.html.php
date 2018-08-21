@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.32, created on 2018-08-16 08:08:37
+/* Smarty version 3.1.32, created on 2018-08-21 03:46:41
   from 'E:\www\recipe\application\admin\views\recipe\index.html' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.32',
-  'unifunc' => 'content_5b753105de7643_07247159',
+  'unifunc' => 'content_5b7b8b21839159_36721313',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '75ca8cc782073050d5620a5d878234f30c50bd98' => 
     array (
       0 => 'E:\\www\\recipe\\application\\admin\\views\\recipe\\index.html',
-      1 => 1534406913,
+      1 => 1534823195,
       2 => 'file',
     ),
   ),
@@ -22,7 +22,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
     'file:../library/footer.lbi' => 1,
   ),
 ),false)) {
-function content_5b753105de7643_07247159 (Smarty_Internal_Template $_smarty_tpl) {
+function content_5b7b8b21839159_36721313 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_checkPlugins(array(0=>array('file'=>'E:\\www\\recipe\\application\\admin\\libraries\\smarty\\plugins\\modifier.date_format.php','function'=>'smarty_modifier_date_format',),));
 $_smarty_tpl->_subTemplateRender('file:../library/header.lbi', $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, 0, $_smarty_tpl->cache_lifetime, array(), 0, false);
 ?>
@@ -102,7 +102,9 @@ foreach ($_from as $_smarty_tpl->tpl_vars['item']->value) {
 ">
 					<td><input type="checkbox" name="idboxs" lay-skin="primary" value="<?php echo $_smarty_tpl->tpl_vars['item']->value['id'];?>
 "></td>
-					<td><?php echo $_smarty_tpl->tpl_vars['item']->value['title'];?>
+					<td><?php if ($_smarty_tpl->tpl_vars['item']->value['img']) {?><a href="javascript:;" class="showimg" data-url="<?php echo $_smarty_tpl->tpl_vars['item']->value['img'];?>
+" style="color:red;">[图] </a><?php }
+echo $_smarty_tpl->tpl_vars['item']->value['title'];?>
  <a href="<?php echo $_smarty_tpl->tpl_vars['item']->value['baidu_url'];?>
 " target="_blank" style="color:red;">搜图</a></td>
 					<td><?php if ($_smarty_tpl->tpl_vars['item']->value['sname']) {?><a href="<?php echo $_smarty_tpl->tpl_vars['item']->value['surl'];?>
@@ -158,6 +160,10 @@ $(document).ready(function() {
 		iframe_box('/recipe/add/id/'+_id,'编辑','1000','700');
 	})
 
+	$(".showimg").click(function(){
+		var imgurl = $(this).attr('data-url');
+		layer.open({type: 1, area: ['800px', '493px'],content: '<img src="/'+imgurl+'" style="width:800px;height:450px">'});
+	})
 	$("#search").click(function() {
 		$("#searchfrm").submit();
 	});
